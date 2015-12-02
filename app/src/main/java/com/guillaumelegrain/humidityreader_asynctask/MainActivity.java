@@ -38,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
         stopButton = (Button) findViewById(R.id.stopButton);
         humidityProgressBar = (ProgressBar) findViewById(R.id.humidityProgressBar);
 
+        updateHumidityAsyncTask = new UpdateHumidityAsyncTask();
+
         //humidityProgressBar.setProgress(humidityPercentage);
     }
 
@@ -91,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
     public void onClickStartButton(View v) {
         Log.i("MainActivity", "onClickStartButton");
 
-        updateHumidityAsyncTask = new UpdateHumidityAsyncTask();
+        // Start updating
         updateHumidityAsyncTask.execute();
 
         // Disable start button
@@ -106,6 +108,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onClickStopButton(View v) {
+        // Stop updating
+        // the task may be interrupted
+        updateHumidityAsyncTask.cancel(true);
+
         // Enable start button
         //Button startButton = (Button) findViewById(R.id.startButton);
         startButton.setClickable(true);
