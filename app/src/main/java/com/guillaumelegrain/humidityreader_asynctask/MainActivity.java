@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -22,8 +23,11 @@ public class MainActivity extends AppCompatActivity {
     private TextView mainTextView;
     private Button startButton;
     private Button stopButton;
+    private Button setButton;
+    private EditText urlEditText;
     private ProgressBar humidityProgressBar;
     private int humidityPercentage;
+    private String url;
 
     private UpdateHumidityAsyncTask updateHumidityAsyncTask;
 
@@ -36,9 +40,12 @@ public class MainActivity extends AppCompatActivity {
         mainTextView = (TextView) findViewById(R.id.textView);
         startButton = (Button) findViewById(R.id.startButton);
         stopButton = (Button) findViewById(R.id.stopButton);
+        setButton = (Button) findViewById(R.id.setButton);
+        urlEditText = (EditText) findViewById(R.id.urlEditText);
         humidityProgressBar = (ProgressBar) findViewById(R.id.humidityProgressBar);
 
-        //urlEditText.setText(.getUrl());
+        url = "http://lmi92.cnam.fr/ds2438/ds2438/";
+        urlEditText.setText(url);
 
         //humidityProgressBar.setProgress(humidityPercentage);
     }
@@ -69,8 +76,7 @@ public class MainActivity extends AppCompatActivity {
         protected Void doInBackground(Void...v) {
             Log.i("UpdateHumidityAsyncTask", "doInBackground");
             isRunning = true;
-            HTTPHumiditySensor humiditySensor = new HTTPHumiditySensor(
-                    "http://lmi92.cnam.fr/ds2438/ds2438/");
+            HTTPHumiditySensor humiditySensor = new HTTPHumiditySensor(url);
             // Request every UPDATE_PERIOD_MS until the task is killed
             Float response = new Float(0);
             while (isRunning) {
@@ -101,9 +107,8 @@ public class MainActivity extends AppCompatActivity {
             mainTextView.setText("[" + dateString + "] Humidity: " + values[0]);
         }
 
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
+        public void stop() {
+            isRunning = false;
             // Enable start button
             startButton.setClickable(true);
             startButton.setEnabled(true);
@@ -111,10 +116,6 @@ public class MainActivity extends AppCompatActivity {
             // Disable stop button
             stopButton.setClickable(false);
             stopButton.setEnabled(false);
-        }
-
-        public void stop() {
-            isRunning = false;
         }
     }
 
@@ -132,9 +133,28 @@ public class MainActivity extends AppCompatActivity {
         updateHumidityAsyncTask.stop();
     }
 
+    public void onClickEditText(View v) {
+        Log.v("MainActivity", "onClickTextEdit");
+        // Make Set button visible
+        setButton.setVisibility(View.VISIBLE);
 
-        // Disable stop button
-        stopButton.setClickable(false);
-        stopButton.setEnabled(false);
+        // Stop updating
+        if (updateHumidityAsyncTask != null) {
+            updateHumidityAsyncTask.stop();
+        }
+
+        // Disable start button
+        startButton.setClickable(false);
+        startButton.setEnabled(false);
+    }
+
+    public void onClickSetButton(View v) {
+        url = urlEditText.getText().toString();
+        Log.v("MainActivity", url);
+        // Enable start button
+        startButton.setClickable(true);
+        startButton.setEnabled(true);
+        // Make Set button invisible
+        setButton.setVisibility(View.INVISIBLE);
     }
 }
