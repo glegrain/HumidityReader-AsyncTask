@@ -38,30 +38,34 @@ public class MainActivity extends AppCompatActivity {
         stopButton = (Button) findViewById(R.id.stopButton);
         humidityProgressBar = (ProgressBar) findViewById(R.id.humidityProgressBar);
 
-        updateHumidityAsyncTask = new UpdateHumidityAsyncTask();
+        //urlEditText.setText(.getUrl());
 
         //humidityProgressBar.setProgress(humidityPercentage);
     }
 
-    private class UpdateHumidityAsyncTask extends AsyncTask<Void, Integer, Float> {
+    private class UpdateHumidityAsyncTask extends AsyncTask<Void, Integer, Void> {
 
         private DateFormat dateFormat;
-        private static final long UPDATE_PERIOD_MS = 5 * 1000;
+        private boolean isRunning;
+        private static final long UPDATE_PERIOD_MS = 1 * 1000;
 
         @Override
         protected void onPreExecute() {
+            Log.i("UpdateHumidityAsyncTask", "onPreExecute");
+            isRunning = false;
             // create a date formatter to display dates into Strings
             dateFormat = new SimpleDateFormat();
         }
 
         @Override
-        protected Float doInBackground(Void...v) {
+        protected Void doInBackground(Void...v) {
             Log.i("UpdateHumidityAsyncTask", "doInBackground");
-            Float response = new Float(0);
+            isRunning = true;
             HTTPHumiditySensor humiditySensor = new HTTPHumiditySensor(
                     "http://lmi92.cnam.fr/ds2438/ds2438/");
             // Request every UPDATE_PERIOD_MS until the task is killed
-            while (true) {
+            Float response = new Float(0);
+            while (isRunning) {
                 long startRequestTime = System.currentTimeMillis();
                 try {
                     response = humiditySensor.value();
@@ -74,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
                 // subtract response duration to account for variable response times
                 SystemClock.sleep(UPDATE_PERIOD_MS - responseDuration);
             }
-            //return response;
+            return null;
         }
 
         @Override
@@ -88,38 +92,43 @@ public class MainActivity extends AppCompatActivity {
             String dateString = dateFormat.format(currentDate);
             mainTextView.setText("[" + dateString + "] Humidity: " + values[0]);
         }
+
+        public void stop() {
+            isRunning = false;
+        }
     }
 
     public void onClickStartButton(View v) {
         Log.i("MainActivity", "onClickStartButton");
 
         // Start updating
+        // Create a new task for each start. Task can only be executed once
+        updateHumidityAsyncTask = new UpdateHumidityAsyncTask();
         updateHumidityAsyncTask.execute();
 
         // Disable start button
         //Button startButton = (Button) findViewById(R.id.startButton);
         startButton.setClickable(false);
-        //startButton.setBackgroundColor(Color.DKGRAY);
+        startButton.setEnabled(false);
 
         // Enable stop button
         //Button stopButton = (Button) findViewById(R.id.stopButton);
         stopButton.setClickable(true);
-        //stopButton.setBackgroundColor(Color.LTGRAY);
+        stopButton.setEnabled(true);
     }
 
     public void onClickStopButton(View v) {
         // Stop updating
-        // the task may be interrupted
-        updateHumidityAsyncTask.cancel(true);
+        updateHumidityAsyncTask.stop();
 
         // Enable start button
         //Button startButton = (Button) findViewById(R.id.startButton);
         startButton.setClickable(true);
-        //startButton.setBackgroundColor(Color.LTGRAY);
+        startButton.setEnabled(true);
 
         // Disable stop button
         //Button stopButton = (Button) findViewById(R.id.stopButton);
         stopButton.setClickable(false);
-        //stopButton.setBackgroundColor(Color.DKGRAY);
+        stopButton.setEnabled(false);
     }
 }
