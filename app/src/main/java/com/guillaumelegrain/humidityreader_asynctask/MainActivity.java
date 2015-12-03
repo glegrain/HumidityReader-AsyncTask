@@ -2,6 +2,8 @@ package com.guillaumelegrain.humidityreader_asynctask;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -13,6 +15,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -110,6 +113,11 @@ public class MainActivity extends AppCompatActivity {
             Date currentDate = new Date();
             String dateString = dateFormat.format(currentDate);
             mainTextView.setText("[" + dateString + "] Humidity: " + values[0]);
+
+            // warn user when there is no internet connection
+            if (!isInternetOn()) {
+                Toast.makeText(getApplication(), "No internet connection", Toast.LENGTH_SHORT);
+            }
         }
 
         public void stop() {
@@ -184,5 +192,19 @@ public class MainActivity extends AppCompatActivity {
     private static String loadURL_SENSOR(Context context){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         return prefs.getString("url_sensor", URL_SENSOR);
+    }
+
+    /**
+     * check if device is connected to the internet
+     * @return boolean
+     */
+    public  final boolean isInternetOn() {
+        final ConnectivityManager conMgr =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        final NetworkInfo activeNetwork = conMgr.getActiveNetworkInfo();
+        if (activeNetwork != null && activeNetwork.isConnected()) {
+            return true;
+        }
+        return false;
     }
 }
