@@ -55,6 +55,14 @@ public class MainActivity extends AppCompatActivity {
             isRunning = false;
             // create a date formatter to display dates into Strings
             dateFormat = new SimpleDateFormat();
+
+            // Disable start button
+            startButton.setClickable(false);
+            startButton.setEnabled(false);
+
+            // Enable stop button
+            stopButton.setClickable(true);
+            stopButton.setEnabled(true);
         }
 
         @Override
@@ -93,6 +101,18 @@ public class MainActivity extends AppCompatActivity {
             mainTextView.setText("[" + dateString + "] Humidity: " + values[0]);
         }
 
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            // Enable start button
+            startButton.setClickable(true);
+            startButton.setEnabled(true);
+
+            // Disable stop button
+            stopButton.setClickable(false);
+            stopButton.setEnabled(false);
+        }
+
         public void stop() {
             isRunning = false;
         }
@@ -105,29 +125,15 @@ public class MainActivity extends AppCompatActivity {
         // Create a new task for each start. Task can only be executed once
         updateHumidityAsyncTask = new UpdateHumidityAsyncTask();
         updateHumidityAsyncTask.execute();
-
-        // Disable start button
-        //Button startButton = (Button) findViewById(R.id.startButton);
-        startButton.setClickable(false);
-        startButton.setEnabled(false);
-
-        // Enable stop button
-        //Button stopButton = (Button) findViewById(R.id.stopButton);
-        stopButton.setClickable(true);
-        stopButton.setEnabled(true);
     }
 
     public void onClickStopButton(View v) {
         // Stop updating
         updateHumidityAsyncTask.stop();
+    }
 
-        // Enable start button
-        //Button startButton = (Button) findViewById(R.id.startButton);
-        startButton.setClickable(true);
-        startButton.setEnabled(true);
 
         // Disable stop button
-        //Button stopButton = (Button) findViewById(R.id.stopButton);
         stopButton.setClickable(false);
         stopButton.setEnabled(false);
     }
