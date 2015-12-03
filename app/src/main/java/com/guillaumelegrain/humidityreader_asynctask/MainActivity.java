@@ -1,8 +1,11 @@
 package com.guillaumelegrain.humidityreader_asynctask;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -20,6 +23,7 @@ import fr.cnam.smb116.thread.asynctask.HTTPHumiditySensor;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String URL_SENSOR = "http://lmi92.cnam.fr/ds2438/ds2438/";
     private TextView mainTextView;
     private Button startButton;
     private Button stopButton;
@@ -44,7 +48,8 @@ public class MainActivity extends AppCompatActivity {
         urlEditText = (EditText) findViewById(R.id.urlEditText);
         humidityProgressBar = (ProgressBar) findViewById(R.id.humidityProgressBar);
 
-        url = "http://lmi92.cnam.fr/ds2438/ds2438/";
+        // get saved sensor url from preferences
+        url = loadURL_SENSOR(getApplication());
         urlEditText.setText(url);
 
         //humidityProgressBar.setProgress(humidityPercentage);
@@ -150,11 +155,34 @@ public class MainActivity extends AppCompatActivity {
 
     public void onClickSetButton(View v) {
         url = urlEditText.getText().toString();
+        saveURL_SENSOR(v.getContext(), url);
         Log.v("MainActivity", url);
         // Enable start button
         startButton.setClickable(true);
         startButton.setEnabled(true);
         // Make Set button invisible
         setButton.setVisibility(View.INVISIBLE);
+    }
+
+    /**
+     * Make sensor url persistent. Save url to preferences.
+     * @param context
+     * @param url
+     */
+    private static void saveURL_SENSOR(Context context, String url) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor edit = prefs.edit();
+        edit.putString("url_sensor", url);
+        edit.commit();
+    }
+
+    /**
+     * load saved sensor url from preferences
+     * @param context
+     * @return String
+     */
+    private static String loadURL_SENSOR(Context context){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getString("url_sensor", URL_SENSOR);
     }
 }
