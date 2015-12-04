@@ -94,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
                     publishProgress(response.intValue());
                 } catch (Exception e) {
                     e.printStackTrace();
+                    isRunning = false;
                 }
                 long endRequestTime = System.currentTimeMillis();
                 long responseDuration = startRequestTime - endRequestTime;
