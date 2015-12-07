@@ -91,7 +91,12 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void...v) {
             Log.i("UpdateHumidityAsyncTask", "doInBackground");
+
             isRunning = true;
+            // warn user when there is no internet connection
+            if (!isInternetOn()) {
+                isRunning = false;
+            }
             HTTPHumiditySensor humiditySensor = new HTTPHumiditySensor(url);
             // Request every UPDATE_PERIOD_MS until the task is killed
             Float response = new Float(0);
@@ -126,7 +131,9 @@ public class MainActivity extends AppCompatActivity {
 
             // warn user when there is no internet connection
             if (!isInternetOn()) {
-                Toast.makeText(getApplication(), "No internet connection", Toast.LENGTH_SHORT);
+                Toast.makeText(getApplicationContext(),
+                        "No internet connection", Toast.LENGTH_SHORT).show();
+                isRunning = false;
             }
         }
 
@@ -144,6 +151,13 @@ public class MainActivity extends AppCompatActivity {
 
     public void onClickStartButton(View v) {
         Log.i("MainActivity", "onClickStartButton");
+
+        // warn user when there is no internet connection
+        if (!isInternetOn()) {
+            Toast.makeText(getApplicationContext(),
+                    "No internet connection", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         // Start updating
         // Create a new task for each start. Task can only be executed once
