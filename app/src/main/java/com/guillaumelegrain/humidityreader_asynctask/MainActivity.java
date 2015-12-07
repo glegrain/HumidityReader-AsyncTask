@@ -17,6 +17,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.txusballesteros.SnakeView;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -33,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private Button setButton;
     private EditText urlEditText;
     private ProgressBar humidityProgressBar;
+    private SnakeView snakeView;
     private int humidityPercentage;
     private String url;
 
@@ -50,6 +53,11 @@ public class MainActivity extends AppCompatActivity {
         setButton = (Button) findViewById(R.id.setButton);
         urlEditText = (EditText) findViewById(R.id.urlEditText);
         humidityProgressBar = (ProgressBar) findViewById(R.id.humidityProgressBar);
+
+        // configure graph
+        snakeView = (SnakeView) findViewById(R.id.snake);
+        snakeView.setMinValue(0);
+        snakeView.setMaxValue(100);
 
         // get saved sensor url from preferences
         url = loadURL_SENSOR(getApplication());
@@ -110,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
             // humidityPercentage = progress[0];
             // Update UI
             humidityProgressBar.setProgress(values[0]);
+            snakeView.addValue(values[0]);
             // create a calendar initialized to the current date and time
             Date currentDate = new Date();
             String dateString = dateFormat.format(currentDate);

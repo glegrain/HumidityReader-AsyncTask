@@ -24,10 +24,10 @@
         android:layout_gravity="right"
         android:clickable="false"
         android:onClick="onClickStopButton"
-        android:layout_below="@+id/humidityProgressBar"
+        android:enabled="false"
+        android:layout_alignTop="@+id/startButton"
         android:layout_toRightOf="@+id/startButton"
-        android:layout_toEndOf="@+id/startButton"
-        android:enabled="false"/>
+        android:layout_toEndOf="@+id/startButton" />
 
     <Button
         android:layout_width="wrap_content"
@@ -35,7 +35,7 @@
         android:text="Start"
         android:id="@+id/startButton"
         android:onClick="onClickStartButton"
-        android:layout_below="@+id/humidityProgressBar"
+        android:layout_below="@+id/urlEditText"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
@@ -75,6 +75,13 @@
         android:layout_alignParentStart="true"
         android:onClick="onClickEditText" />
 
-
+    <com.txusballesteros.SnakeView
+        android:id="@+id/snake"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_above="@+id/urlEditText"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="27dp" />
 
 </RelativeLayout>
